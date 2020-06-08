@@ -8,10 +8,14 @@ Downloads/*.pdf goes to ~/Documents/books/pdf/
 
 import re
 import os
+from datetime import datetime
 
 HOME = os.getenv("HOME")
 DOWNLOADS_FOLDER = HOME +  "/" + "Downloads" + "/"
 BOOKS_FOLDER = HOME + "/" + "Documents/books" + "/"
+
+# def print_log(total_files):
+
 
 def get_file_extension(file_name):
     """
@@ -38,6 +42,10 @@ def move_files():
 
     [mv(file_name) for file_name in files_to_move]
 
+    output_log = "Total files moved " +  "at: " + str(datetime.now()) + ": " + str(len(files_to_move))
+    log_file = open("move_files.log", "a")
+    log_file.write(output_log)
+    log_file.write("\n")
 
 def main():
     move_files()
