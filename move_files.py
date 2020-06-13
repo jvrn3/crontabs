@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """Move files from Download folder to specific folders
 
 Downloads/*.mobi goes to ~/Documents/books/mobi/
@@ -9,12 +10,21 @@ Downloads/*.pdf goes to ~/Documents/books/pdf/
 import re
 import os
 from datetime import datetime
+import logging
 
 HOME = os.getenv("HOME")
 DOWNLOADS_FOLDER = HOME +  "/" + "Downloads" + "/"
 BOOKS_FOLDER = HOME + "/" + "Documents/books" + "/"
+LOG_FILE = HOME + "/coding/crontabs/move_files.log"
 
-# def print_log(total_files):
+
+def logger_config():
+    logging.basicConfig(format='%(asctime)s - %(message)s',
+                        filename=LOG_FILE,
+                        datefmt='%H:%M',
+                        level='INFO')
+
+
 
 
 def get_file_extension(file_name):
@@ -24,10 +34,12 @@ def get_file_extension(file_name):
     regex = re.compile(r'\.(mobi|epub|pdf)')
     return regex.search(file_name).group()[1::]
 
+
 def move_files():
     """
 
     """
+    logger = logging.getLogger(LOG_FILE)
     regex = re.compile(r'^.*\.(mobi|epub|pdf)$')
     files_to_move = list(filter(lambda file_name:
                                 regex.match(file_name),
@@ -40,15 +52,19 @@ def move_files():
         new_folder = BOOKS_FOLDER + file_extension + '/' + file_name
         os.rename(old_folder, new_folder)
 
+
     [mv(file_name) for file_name in files_to_move]
 
-    output_log = "Total files moved " +  "at: " + str(datetime.now()) + ": " + str(len(files_to_move))
-    log_file = open("move_files.log", "a")
-    log_file.write(output_log)
-    log_file.write("\n")
+
+    logger.info("Total files moved: {0}".format(len(files_to_move)))
+
 
 def main():
+    logger_config()
     move_files()
+
 
 if __name__ == "__main__":
     main()
+
+    logging.shutdown()
